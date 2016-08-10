@@ -61,10 +61,12 @@ html
                             console.log(event)
                             domain = {
                                 domain: this.newdomain,
-                                expiry: ''
+                                expiry: '',
+                                rem_days : ''
                             }
                             this.$http.get('/api/domain/_search?domain=' + this.newdomain).then((response) => {
                                 domain.expiry = new Date(response.data)
+                                domain.rem_days = (domain.expiry - Date.now())/1000/60/60/24
                                 console.log(response.data)
                             }, (response) => {
                                 // error callback

@@ -39,6 +39,7 @@ app.get('/api/domain/_search', function(req, res) {
     
     openssl.stderr.on('data', function(data) {
         console.log('' + data);
+        res.send('')
     }); 
     
     openssl.on('close', function (code) {

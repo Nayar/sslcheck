@@ -1,0 +1,102 @@
+doctype html
+html
+    head
+        title lol
+        script(src="https://vuejs.org/js/vue.js" type="text/javascript")
+        script(src="https://cdn.jsdelivr.net/vue.resource/0.9.3/vue-resource.min.js")
+        script.
+            window.onload = function(){
+                var me;
+                
+                Vue.component('demo-grid', {
+                    template: '#grid-template',
+                    props: {
+                        data: Array,
+                        columns: Array,
+                        filterKey: String
+                    },
+                    data: function () {
+                        var sortOrders = {}
+                        this.columns.forEach(function (key) {
+                        sortOrders[key] = 1
+                        })
+                        return {
+                        sortKey: '',
+                        sortOrders: sortOrders
+                        }
+                    },
+                    methods: {
+                        sortBy: function (key) {
+                        this.sortKey = key
+                        this.sortOrders[key] = this.sortOrders[key] * -1
+                        }
+                    }
+                })
+
+                v= new Vue({
+                    el: '#app',
+                    data: {
+                        message: 'Hello Vue.js!',
+                        me : me,
+                        mypath : '/graylog_0/_search',
+                        searchQuery: '',
+                        gridColumns: ['domain', 'expiry' , 'rem_days'],
+                        gridData: [{
+                            "domain" : "fds",
+                            "expiry" : "gfd",
+                            "rem_days" : 5
+                        }]
+                    },
+                    computed: {
+                        results : function() {
+
+                        }
+                    },
+                    ready() {
+
+                        // GET /someUrl
+                        
+
+                    }
+                  
+                })
+            }
+            
+            
+    body#app
+        h1 Mera Dashboard           
+            
+        script(type="text/x-template" id="grid-template").
+            <table>
+                <thead>
+                <tr>
+                    <th v-for="key in columns"
+                    @click="sortBy(key)"
+                    :class="{active: sortKey == key}">
+                    {{key | capitalize}}
+                    <span class="arrow"
+                        :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+                    </span>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="
+                    entry in data
+                    | filterBy filterKey
+                    | orderBy sortKey sortOrders[sortKey]">
+                    <td v-for="key in columns">
+                    {{entry[key] | json}}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            
+        input(name="query" v-model="searchQuery" placeholder="filter") 
+        
+        div.
+            <demo-grid
+                :data="gridData"
+                :columns="gridColumns"
+                :filter-key="searchQuery">
+            </demo-grid>

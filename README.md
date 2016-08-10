@@ -3,6 +3,10 @@
 ```
 # apt-get install nodejs npm
 
+# apt-get install build-essential \
+                     pkg-config \
+                     libsystemd-journal-dev
+
 ```
 
 # Install

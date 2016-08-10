@@ -11,6 +11,10 @@ const exec = require('child_process').exec;
 
 var domains = []
 
+var log = function(data, level) {
+    exec("echo '" + JSON.stringify(data) + "' | systemd-cat -p 6 -t sslcheck")
+}
+
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/', function(req, res) {
     res.render('index.pug');
@@ -39,6 +43,7 @@ app.get('/api/domain/_search', function(req, res) {
             domain : domain,
             expiry_rem_days : (date - Date.now())/1000/60/60/24
         }
+        log(res_domain)
         res.send(res_domain);
     }); 
     

@@ -34,7 +34,12 @@ app.get('/api/domain/_search', function(req, res) {
         data = data.trim()
         date = data.split('=');
         date = new Date(date[1])
-        res.send(date);
+        res_domain = {
+            expiry : date,
+            domain : domain,
+            expiry_rem_days : (date - Date.now())/1000/60/60/24
+        }
+        res.send(res_domain);
     }); 
     
     openssl.stderr.on('data', function(data) {

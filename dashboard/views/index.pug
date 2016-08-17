@@ -6,24 +6,16 @@ html
         script(src="https://cdn.jsdelivr.net/vue.resource/0.9.3/vue-resource.min.js")
         script.
             window.onload = function(){
-                var me;
-
+            
                 v= new Vue({
                     el: '#app',
                     data: {
                         message: 'Hello Vue.js!',
-                        me : me,
                         newdomain: '',
-                        mypath : '/graylog_0/_search',
                         searchQuery: '',
                         domains: [],
                         time_now: Date.now(),
                         sort_by: 'expiry'
-                    },
-                    computed: {
-                        results : function() {
-
-                        }
                     },
                     ready() {
         
@@ -45,18 +37,14 @@ html
                             }
                             this.$http.get('/api/domains/_search?domain=' + this.newdomain).then((response) => {
                                 domain = response.data
-                                console.log(domain)
                                 this.domains.push(domain)
-                                console.log(this.domains)
                             }, (response) => {
                                 // error callback
                             });
                             this.newdomain = ''
                         },
                         days_rem: function(domain) {
-                            //console.log('here')
                             domain.days_rem = (Date.parse(domain.expiry) - this.time_now) / 1000 / 60 / 60 / 24
-                            //console.log(Date.parse(domain.expiry) - Date.now())
                             return domain.days_rem
                         },
                         

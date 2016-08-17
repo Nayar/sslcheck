@@ -17,7 +17,8 @@ html
                         mypath : '/graylog_0/_search',
                         searchQuery: '',
                         domains: [],
-                        time_now: Date.now()
+                        time_now: Date.now(),
+                        sort_by: 'expiry'
                     },
                     computed: {
                         results : function() {
@@ -59,11 +60,14 @@ html
                             return domain.days_rem
                         },
                         
+                        set_sort_by: function (val) {
+                            this.sort_by = val
+                        },
+                        
                         domain_style: function (domain) {
                             var red = 0
                             var green = 255
                             var blue = 0
-                            console.log(domain.days_rem)
                             domain.days_rem = (Date.parse(domain.expiry) - this.time_now) / 1000 / 60 / 60 / 24
                             if( domain.days_rem <= 100) {
                                 red = parseInt((100-domain.days_rem)/100*255*2)
@@ -76,7 +80,7 @@ html
                             
                             return { 
                                 color: 'rgb(' + red + ',' + green  + ' , ' + blue + ')',
-                                fontSize: (red/255*5 + 14) + 'px'
+                                fontSize: (red/255*10 + 16) + 'px'
                             }
                         }
                     }
@@ -93,13 +97,15 @@ html
         
         table
             tr
-                th Domain
-                th Expiry
-                th Days Remaining
-            tr(v-for="domain in domains" v-bind:style="domain_style(domain)")
-                td {{domain.domain }}
-                td {{domain.expiry}}
+                th(@click="set_sort_by('domain')") Domain
+                th(@click="set_sort_by('expiry')") Expiry
+                th(@click="set_sort_by('expiry')") Days Remaining
+            tr(v-for="domain in domains | orderBy sort_by | filterBy searchQuery" v-bind:style="domain_style(domain)")
+                td {{ domain.domain }}
+                td {{ domain.expiry }}
                 td {{ days_rem(domain) }}
-
-            
-        input(name="query" v-model="newdomain" placeholder="newdomain.example" v-on:keyup.enter="adddomain") 
+            tr
+                td
+                    
+                    span +
+                    input(name="query" v-model="newdomain" placeholder="newdomain.example" v-on:keyup.enter="adddomain") 

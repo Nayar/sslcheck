@@ -7,31 +7,6 @@ html
         script.
             window.onload = function(){
                 var me;
-                
-                Vue.component('demo-grid', {
-                    template: '#grid-template',
-                    props: {
-                        data: Array,
-                        columns: Array,
-                        filterKey: String
-                    },
-                    data: function () {
-                        var sortOrders = {}
-                        this.columns.forEach(function (key) {
-                            sortOrders[key] = 1
-                        })
-                        return {
-                            sortKey: '',
-                            sortOrders: sortOrders
-                        }
-                    },
-                    methods: {
-                        sortBy: function (key) {
-                            this.sortKey = key
-                            this.sortOrders[key] = this.sortOrders[key] * -1
-                        }
-                    }
-                })
 
                 v= new Vue({
                     el: '#app',
@@ -41,7 +16,8 @@ html
                         newdomain: '',
                         mypath : '/graylog_0/_search',
                         searchQuery: '',
-                        domains: {}
+                        domains: [],
+                        time_now: Date.now()
                     },
                     computed: {
                         results : function() {
@@ -49,13 +25,14 @@ html
                         }
                     },
                     ready() {
-
+        
                         this.$http.get('/api/domains/').then((response) => {
                             this.domains = response.data
                         }, (response) => {
                             // error callback
                         });
-
+                        
+                        setInterval(function(){ v.time_now = Date.now() }, 1000);
                     },
                     
                     methods: {
@@ -68,12 +45,39 @@ html
                             this.$http.get('/api/domains/_search?domain=' + this.newdomain).then((response) => {
                                 domain = response.data
                                 console.log(domain)
-                                this.domains[domain.domain] = domain
+                                this.domains.push(domain)
                                 console.log(this.domains)
                             }, (response) => {
                                 // error callback
                             });
                             this.newdomain = ''
+                        },
+                        days_rem: function(domain) {
+                            //console.log('here')
+                            domain.days_rem = (Date.parse(domain.expiry) - this.time_now) / 1000 / 60 / 60 / 24
+                            //console.log(Date.parse(domain.expiry) - Date.now())
+                            return domain.days_rem
+                        },
+                        
+                        domain_style: function (domain) {
+                            var red = 0
+                            var green = 255
+                            var blue = 0
+                            console.log(domain.days_rem)
+                            domain.days_rem = (Date.parse(domain.expiry) - this.time_now) / 1000 / 60 / 60 / 24
+                            if( domain.days_rem <= 100) {
+                                red = parseInt((100-domain.days_rem)/100*255*2)
+                                green = 0
+                            }
+                            else{
+                                red = 0
+                                green = 100
+                            }
+                            
+                            return { 
+                                color: 'rgb(' + red + ',' + green  + ' , ' + blue + ')',
+                                fontSize: (red/255*5 + 14) + 'px'
+                            }
                         }
                     }
                  
@@ -91,9 +95,11 @@ html
             tr
                 th Domain
                 th Expiry
-            tr(v-for="(key, val) in domains")
-                td {{key }}
-                td {{val.expiry}}
+                th Days Remaining
+            tr(v-for="domain in domains" v-bind:style="domain_style(domain)")
+                td {{domain.domain }}
+                td {{domain.expiry}}
+                td {{ days_rem(domain) }}
 
             
         input(name="query" v-model="newdomain" placeholder="newdomain.example" v-on:keyup.enter="adddomain") 

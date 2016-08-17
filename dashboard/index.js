@@ -10,7 +10,14 @@ app.use(bodyParser.urlencoded({extended: true }));
 app.use(bodyParser.json());
 const exec = require('child_process').exec;
 
-var domains = {}
+var domains = []
+
+fs.readFile('domains.json', 'utf8', function (err,data) {
+    if (err) {
+        return console.log(err);
+    }
+    domains = JSON.parse(data)
+});
 
 var log = function(data, level) {
     console.log(data);
@@ -43,7 +50,7 @@ app.get('/api/domains/_search', function(req, res) {
             expiry : date,
             domain : domain
         }
-        domains[domain] = res_domain
+        domains.push(res_domain)
         fs.writeFile("domains.json", JSON.stringify(domains), function(err) {
             if(err) {
                 return console.log(err);

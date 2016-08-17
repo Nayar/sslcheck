@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var http = require("http");
+var fs = require('fs');
 
 var request = require('request');
 
@@ -9,9 +10,10 @@ app.use(bodyParser.urlencoded({extended: true }));
 app.use(bodyParser.json());
 const exec = require('child_process').exec;
 
-var domains = []
+var domains = {}
 
 var log = function(data, level) {
+    console.log(data);
     exec("echo '" + JSON.stringify(data) + "' | systemd-cat -p 6 -t sslcheck")
 }
 
@@ -20,12 +22,11 @@ app.get('/', function(req, res) {
     res.render('index.pug');
 });
 
-app.get('/api/domain', function(req, res) {
-    
+app.get('/api/domains', function(req, res) {
+    res.send(domains)
 });
 
-app.get('/api/domain/_search', function(req, res) {
-//     console.log(req)
+app.get('/api/domains/_search', function(req, res) {
     
     domain = req.query.domain
     
@@ -40,9 +41,16 @@ app.get('/api/domain/_search', function(req, res) {
         date = new Date(date[1])
         res_domain = {
             expiry : date,
-            domain : domain,
-            expiry_rem_days : (date - Date.now())/1000/60/60/24
+            domain : domain
         }
+        domains[domain] = res_domain
+        fs.writeFile("domains.json", JSON.stringify(domains), function(err) {
+            if(err) {
+                return console.log(err);
+            }
+            
+            console.log("The file was saved!");
+        }); 
         log(res_domain)
         res.send(res_domain);
     }); 

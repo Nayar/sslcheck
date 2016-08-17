@@ -41,8 +41,7 @@ html
                         newdomain: '',
                         mypath : '/graylog_0/_search',
                         searchQuery: '',
-                        gridColumns: ['domain', 'expiry' , 'expiry_rem_days'],
-                        gridData: []
+                        domains: {}
                     },
                     computed: {
                         results : function() {
@@ -51,8 +50,11 @@ html
                     },
                     ready() {
 
-                        // GET /someUrl
-                        
+                        this.$http.get('/api/domains/').then((response) => {
+                            this.domains = response.data
+                        }, (response) => {
+                            // error callback
+                        });
 
                     },
                     
@@ -61,13 +63,13 @@ html
                             console.log(event)
                             domain = {
                                 domain: this.newdomain,
-                                expiry: '',
-                                expiry_rem_days : ''
+                                expiry: ''
                             }
-                            this.$http.get('/api/domain/_search?domain=' + this.newdomain).then((response) => {
+                            this.$http.get('/api/domains/_search?domain=' + this.newdomain).then((response) => {
                                 domain = response.data
                                 console.log(domain)
-                                this.gridData.push(domain)
+                                this.domains[domain.domain] = domain
+                                console.log(this.domains)
                             }, (response) => {
                                 // error callback
                             });
@@ -81,41 +83,17 @@ html
             
             
     body#app
-        h1 Mera Dashboard           
-            
-        script(type="text/x-template" id="grid-template").
-            <table>
-                <thead>
-                <tr>
-                    <th v-for="key in columns"
-                    @click="sortBy(key)"
-                    :class="{active: sortKey == key}">
-                    {{key | capitalize}}
-                    <span class="arrow"
-                        :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
-                    </span>
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="
-                    entry in data
-                    | filterBy filterKey
-                    | orderBy sortKey sortOrders[sortKey]">
-                    <td v-for="key in columns">
-                    {{entry[key]}}
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        h1 Mera Dashboard
             
         input(name="query" v-model="searchQuery" placeholder="filter") 
         
-        div.
-            <demo-grid
-                :data="gridData"
-                :columns="gridColumns"
-                :filter-key="searchQuery">
-            </demo-grid>
+        table
+            tr
+                th Domain
+                th Expiry
+            tr(v-for="(key, val) in domains")
+                td {{key }}
+                td {{val.expiry}}
+
             
-        input(name="query" v-model="newdomain" placeholder="newdomain" v-on:keyup.enter="adddomain") 
+        input(name="query" v-model="newdomain" placeholder="newdomain.example" v-on:keyup.enter="adddomain") 

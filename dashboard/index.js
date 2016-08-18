@@ -18,11 +18,12 @@ fs.readFile('domains.json', 'utf8', function (err,data) {
     }
     domains = JSON.parse(data)
     
-    for(var i = 0; i < domains.length; i++){
-        domain = domains[i]
-        domain.days_rem = (Date.parse(domain.expiry) - Date.now()) / 1000 / 60 / 60 / 24
-        log(domain)
-    }
+    check_all_domains()
+    setInterval(function(){
+        check_all_domains()
+    }, 1000 * 60* 60);
+    
+    
 });
 
 var log = function(data, level) {
@@ -38,6 +39,14 @@ app.get('/', function(req, res) {
 app.get('/api/domains', function(req, res) {
     res.send(domains)
 });
+
+function check_all_domains() {
+    for(var i = 0; i < domains.length; i++){
+        domain = domains[i]
+        domain.days_rem = (Date.parse(domain.expiry) - Date.now()) / 1000 / 60 / 60 / 24
+        log(domain)
+    }
+}
 
 function check_domain(domain,callback) {
     

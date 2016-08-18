@@ -85,10 +85,11 @@ function check_domain(domain,callback) {
 
 app.post('/api/domains/refresh', function(req,res) {
     for(var i = 0; i < domains.length; i++){
-        check_domain(domains[i].name, function(data){
+        check_domain(domains[i].domain, function(data){
             domains[i] = data
         });
     }
+    res.send('ok')
 });
 
 app.get('/api/domains/_search', function(req, res) {

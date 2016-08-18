@@ -17,6 +17,12 @@ fs.readFile('domains.json', 'utf8', function (err,data) {
         return console.log(err);
     }
     domains = JSON.parse(data)
+    
+    for(var i = 0; i < domains.length; i++){
+        domain = domains[i]
+        domain.days_rem = (Date.parse(domain.expiry) - Date.now()) / 1000 / 60 / 60 / 24
+        log(domain)
+    }
 });
 
 var log = function(data, level) {
@@ -54,8 +60,7 @@ function check_domain(domain,callback) {
             }
             
             console.log("The file was saved!");
-        }); 
-        log(res_domain)
+        });
         callback(res_domain);
     }); 
     
@@ -70,7 +75,6 @@ function check_domain(domain,callback) {
 }
 
 app.post('/api/domains/refresh', function(req,res) {
-    
     for(var i = 0; i < domains.length; i++){
         check_domain(domains[i].name, function(data){
             domains[i] = data
@@ -83,6 +87,8 @@ app.get('/api/domains/_search', function(req, res) {
     check_domain(domain,function(data) {
         domains.push(data)
         res.send(data)
+        data.days_rem = (data.expiry - Date.now()) / 1000 / 60 / 60 / 24
+        log(data)
     })
 });
 

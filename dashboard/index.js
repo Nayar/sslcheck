@@ -18,9 +18,9 @@ fs.readFile('domains.json', 'utf8', function (err,data) {
     }
     domains = JSON.parse(data)
     
-    check_all_domains()
+    refresh_all_domains()
     setInterval(function(){
-        check_all_domains()
+        refresh_all_domains()
     }, 1000 * 60* 60);
     
     
@@ -31,7 +31,6 @@ var log = function(data, level) {
     exec("echo '" + JSON.stringify(data) + "' | systemd-cat -p 6 -t sslcheck")
 }
 
-// respond with "hello world" when a GET request is made to the homepage
 app.get('/', function(req, res) {
     res.render('index.pug');
 });
@@ -40,11 +39,9 @@ app.get('/api/domains', function(req, res) {
     res.send(domains)
 });
 
-function check_all_domains() {
+function refresh_all_domains() { 
     for(var i = 0; i < domains.length; i++){
-        domain = domains[i]
-        domain.days_rem = (Date.parse(domain.expiry) - Date.now()) / 1000 / 60 / 60 / 24
-        log(domain)
+        refresh_domain(i);
     }
 }
 
@@ -61,15 +58,10 @@ function check_domain(domain,callback) {
         date = new Date(date[1])
         res_domain = {
             expiry : date,
-            domain : domain
+            domain : domain,
+            days_rem : (date - Date.now()) / 1000 / 60 / 60 / 24
         }
-        fs.writeFile("domains.json", JSON.stringify(domains), function(err) {
-            if(err) {
-                return console.log(err);
-            }
-            
-            console.log("The file was saved!");
-        });
+        
         callback(res_domain);
     }); 
     
@@ -83,11 +75,22 @@ function check_domain(domain,callback) {
     });
 }
 
+function refresh_domain(i) {
+    domain = domains[i]
+    check_domain(domain.domain,function(data) {
+        domains[i] = data
+        fs.writeFile("domains.json", JSON.stringify(domains), function(err) {
+            if(err) {
+                return console.log(err);
+            }
+            log(domains[i])
+        });
+    });
+}
+
 app.post('/api/domains/refresh', function(req,res) {
     for(var i = 0; i < domains.length; i++){
-        check_domain(domains[i].domain, function(data){
-            domains[i] = data
-        });
+        refresh_domain(i);
     }
     res.send('ok')
 });
@@ -104,5 +107,5 @@ app.get('/api/domains/_search', function(req, res) {
 
 
 app.listen(3000, function () {
-    console.log('Example app listening on port 3000!');
+    console.log('NodeJS listening on port 3000!');
 });

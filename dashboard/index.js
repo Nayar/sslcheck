@@ -33,16 +33,14 @@ app.get('/api/domains', function(req, res) {
     res.send(domains)
 });
 
-app.get('/api/domains/_search', function(req, res) {
-    
-    domain = req.query.domain
+function check_domain(domain,callback) {
     
     cmd = 'echo | openssl s_client -connect ' + domain + ':443 -servername ' + domain + ' 2>/dev/null | openssl x509 -noout -enddate'
-//     console.log(cmd)
+    //     console.log(cmd)
     openssl = exec(cmd);
     
     openssl.stdout.on('data', function(data) {
-//         console.log(data)
+        //         console.log(data)
         data = data.trim()
         date = data.split('=');
         date = new Date(date[1])
@@ -50,7 +48,6 @@ app.get('/api/domains/_search', function(req, res) {
             expiry : date,
             domain : domain
         }
-        domains.push(res_domain)
         fs.writeFile("domains.json", JSON.stringify(domains), function(err) {
             if(err) {
                 return console.log(err);
@@ -59,17 +56,34 @@ app.get('/api/domains/_search', function(req, res) {
             console.log("The file was saved!");
         }); 
         log(res_domain)
-        res.send(res_domain);
+        callback(res_domain);
     }); 
     
     openssl.stderr.on('data', function(data) {
         console.log('' + data);
-        res.send('')
+        callback('')
     }); 
     
     openssl.on('close', function (code) {
         //     console.log('child process exited with code ' + code);
     });
+}
+
+app.post('/api/domains/refresh', function(req,res) {
+    
+    for(var i = 0; i < domains.length; i++){
+        check_domain(domains[i].name, function(data){
+            domains[i] = data
+        });
+    }
+});
+
+app.get('/api/domains/_search', function(req, res) {
+    domain = req.query.domain
+    check_domain(domain,function(data) {
+        domains.push(data)
+        res.send(data)
+    })
 });
 
 

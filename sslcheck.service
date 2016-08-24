@@ -3,7 +3,7 @@ Description=sslcheck
 
 [Service]
 WorkingDirectory=/opt/
-ExecStart=/usr/bin/nodejs /opt/sslcheck/dashboard/index.js
+ExecStart=/usr/bin/nodejs /opt/sslcheck/index.js
 
 [Install]
 WantedBy=multi-user.target

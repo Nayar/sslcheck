@@ -36,6 +36,7 @@ html
                                 expiry: ''
                             }
                             this.$http.get('/api/domains/_search?domain=' + this.newdomain).then((response) => {
+                                console.log(response.data)
                                 domain = response.data
                                 this.domains.push(domain)
                             }, (response) => {

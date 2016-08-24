@@ -75,7 +75,7 @@ function check_domain(domain,callback) {
     });
 }
 
-function refresh_domain(i) {
+function refresh_domain(i,callback) {
     domain = domains[i]
     check_domain(domain.domain,function(data) {
         domains[i] = data
@@ -84,6 +84,9 @@ function refresh_domain(i) {
                 return console.log(err);
             }
             log(domains[i])
+            if(callback != null) {
+                callback()
+            }
         });
     });
 }
@@ -97,12 +100,10 @@ app.post('/api/domains/refresh', function(req,res) {
 
 app.get('/api/domains/_search', function(req, res) {
     domain = req.query.domain
-    check_domain(domain,function(data) {
-        domains.push(data)
-        res.send(data)
-        data.days_rem = (data.expiry - Date.now()) / 1000 / 60 / 60 / 24
-        log(data)
-    })
+    domains.push({domain: domain})
+    refresh_domain(domains.length - 1, function() {
+        res.json(domains[domains.length - 1])
+    });    
 });
 
 app.use(express.static('public'));

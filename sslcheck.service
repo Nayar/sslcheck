@@ -2,7 +2,7 @@
 Description=sslcheck
 
 [Service]
-WorkingDirectory=/opt/
+WorkingDirectory=/opt/sslcheck/
 ExecStart=/usr/bin/nodejs /opt/sslcheck/index.js
 
 [Install]

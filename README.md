@@ -1,11 +1,9 @@
 # Dependencies
 
 ```
-# apt-get install nodejs npm
+# apt-get install nodejs nodejs-legacy npm
 
-# apt-get install build-essential \
-                     pkg-config \
-                     libsystemd-journal-dev
+# apt-get install make libsystemd-journal-dev pkg-config 
 
 ```
 

@@ -107,6 +107,7 @@ app.get('/api/domains/_search', function(req, res) {
 });
 
 app.use(express.static('public'));
+app.use(express.static('node_modules/bootstrap/dist/css/'));
 
 app.listen(3000, function () {
     console.log('NodeJS listening on port 3000!');

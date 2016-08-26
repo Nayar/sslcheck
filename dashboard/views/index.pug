@@ -2,6 +2,8 @@ doctype html
 html
     head
         title SSL Check
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        link(href="bootstrap.min.css" rel="stylesheet")
         script(src="vue.js" type="text/javascript")
         script(src="vue-resource.min.js")
         script.
@@ -80,21 +82,22 @@ html
             
             
     body#app
-        h1 SSL Check
-            
-        input(name="query" v-model="searchQuery" placeholder="filter") 
-        
-        table
-            tr
-                th(@click="set_sort_by('domain')") Domain
-                th(@click="set_sort_by('expiry')") Expiry
-                th(@click="set_sort_by('expiry')") Days Remaining
-            tr(v-for="domain in domains | orderBy sort_by | filterBy searchQuery" v-bind:style="domain_style(domain)")
-                td {{ domain.domain }}
-                td {{ domain.expiry }}
-                td {{ days_rem(domain) }}
-            tr
-                td
+        div.container
+            h1 SSL Check
+                
+            input.form-control(name="query" v-model="searchQuery" placeholder="filter") 
+            br 
+            table.table.table-bordered.table-hover
+                tr
+                    th(@click="set_sort_by('domain')") Domain
+                    th(@click="set_sort_by('expiry')") Expiry
+                    th(@click="set_sort_by('expiry')") Days Remaining
+                tr(v-for="domain in domains | orderBy sort_by | filterBy searchQuery" v-bind:style="domain_style(domain)")
+                    td {{ domain.domain }}
+                    td {{ domain.expiry }}
+                    td {{ days_rem(domain) }}
                     
-                    span +
-                    input(name="query" v-model="newdomain" placeholder="newdomain.example" v-on:keyup.enter="adddomain") 
+            .form-group.form-inline
+                        
+                        input.form-control(name="query" v-model="newdomain" placeholder="newdomain.example" v-on:keyup.enter="adddomain") 
+                        label + 

@@ -8,7 +8,8 @@
     "express": "~4.14.0",
     "request": "~2.74.0",
     "body-parser": "~1.15.2",
-    "systemd-journald": "~1.1.1"
+    "systemd-journald": "~1.1.1",
+    "bootstrap": "~3.3.7"
   },
   "devDependencies": {},
   "scripts": {

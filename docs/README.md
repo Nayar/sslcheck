@@ -49,7 +49,7 @@ A stream `sslcheck` is created to match all logs generated from application `ssl
 
 ![Adding alerts\label{img7}](./img/addnewalertcondition.png)
 
-An email is received like this (Fig \ref{img8})
+An email is received like in Fig \ref{img8})
 
 ![Graylog Email\label{img8}](./img/email.png)
 

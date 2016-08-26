@@ -58,3 +58,4 @@ An email is received like in Fig \ref{img8})
 - Use Websocket for live updates
 - Add bootstrap CSS or alternatives
 - Field validation
+- Graylog dashboard will show duplicates if app is reloaded

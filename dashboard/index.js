@@ -21,13 +21,13 @@ fs.readFile('domains.json', 'utf8', function (err,data) {
     refresh_all_domains()
     setInterval(function(){
         refresh_all_domains()
-    }, 1000 * 60* 60);
+    }, 1000 * 60* 60 * 12);
     
     
 });
 
 var log = function(data, level) {
-    console.log(data);
+//     console.log(data);
     exec("echo '" + JSON.stringify(data) + "' | systemd-cat -p 6 -t sslcheck")
 }
 
@@ -66,7 +66,7 @@ function check_domain(domain,callback) {
     }); 
     
     openssl.stderr.on('data', function(data) {
-        console.log('' + data);
+//         console.log('' + data);
         callback('')
     }); 
     

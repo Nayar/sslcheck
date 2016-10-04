@@ -100,6 +100,15 @@ app.post('/api/domains/refresh', function(req,res) {
 
 app.get('/api/domains/_search', function(req, res) {
     domain = req.query.domain
+    if(domain == ''){
+        return false
+    }
+    for(var i = 0; i < domains.length; i++){
+        if(domains[i].domain == domain){
+            return false
+        }
+    }
+    
     domains.push({domain: domain})
     refresh_domain(domains.length - 1, function() {
         res.json(domains[domains.length - 1])

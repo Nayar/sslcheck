@@ -95,7 +95,7 @@ html
                 tr(v-for="domain in domains | orderBy sort_by | filterBy searchQuery" v-bind:style="domain_style(domain)")
                     td {{ domain.domain }}
                     td {{ domain.expiry }}
-                    td {{ days_rem(domain) }}
+                    td {{ days_rem(domain).toFixed(5) | }}
                     
             .form-group.form-inline
                         

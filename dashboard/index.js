@@ -66,8 +66,8 @@ function check_domain(domain,callback) {
     }); 
     
     openssl.stderr.on('data', function(data) {
-//         console.log('' + data);
-        callback('')
+        console.log('' + data);
+        callback(false)
     }); 
     
     openssl.on('close', function (code) {
@@ -78,7 +78,9 @@ function check_domain(domain,callback) {
 function refresh_domain(i,callback) {
     domain = domains[i]
     check_domain(domain.domain,function(data) {
-        domains[i] = data
+        console.log(data)
+        if(data)
+            domains[i] = data
         fs.writeFile("domains.json", JSON.stringify(domains), function(err) {
             if(err) {
                 return console.log(err);
@@ -121,3 +123,7 @@ app.use(express.static('node_modules/bootstrap/dist/css/'));
 app.listen(3000, function () {
     console.log('NodeJS listening on port 3000!');
 });
+
+
+// starttls
+// printf "quit\n" | openssl s_client -connect 95.141.107.34:25 -starttls smtp 2>/dev/null  | openssl x509 -enddate -noout

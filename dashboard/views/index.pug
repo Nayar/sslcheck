@@ -60,8 +60,8 @@ html
                             var green = 255
                             var blue = 0
                             domain.days_rem = (Date.parse(domain.expiry) - this.time_now) / 1000 / 60 / 60 / 24
-                            if( domain.days_rem <= 100) {
-                                red = parseInt((100-domain.days_rem)/100*255*2)
+                            if( domain.days_rem <= 45) {
+                                red = parseInt((45-domain.days_rem)/45*255*2)
                                 green = 0
                             }
                             else{
@@ -95,7 +95,9 @@ html
                 tr(v-for="domain in domains | orderBy sort_by | filterBy searchQuery" v-bind:style="domain_style(domain)")
                     td {{ domain.domain }}
                     td {{ domain.expiry }}
-                    td {{ days_rem(domain) }}
+                    td {{ days_rem(domain).toFixed(5) | }}
+                    td 
+                        button Renew
                     
             .form-group.form-inline
                         

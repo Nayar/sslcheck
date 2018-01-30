@@ -21,13 +21,13 @@ fs.readFile('domains.json', 'utf8', function (err,data) {
     refresh_all_domains()
     setInterval(function(){
         refresh_all_domains()
-    }, 1000 * 60* 60);
+    }, 1000 * 60* 60 * 12);
     
     
 });
 
 var log = function(data, level) {
-    console.log(data);
+//     console.log(data);
     exec("echo '" + JSON.stringify(data) + "' | systemd-cat -p 6 -t sslcheck")
 }
 
@@ -67,7 +67,7 @@ function check_domain(domain,callback) {
     
     openssl.stderr.on('data', function(data) {
         console.log('' + data);
-        callback('')
+        callback(false)
     }); 
     
     openssl.on('close', function (code) {
@@ -78,7 +78,9 @@ function check_domain(domain,callback) {
 function refresh_domain(i,callback) {
     domain = domains[i]
     check_domain(domain.domain,function(data) {
-        domains[i] = data
+        console.log(data)
+        if(data)
+            domains[i] = data
         fs.writeFile("domains.json", JSON.stringify(domains), function(err) {
             if(err) {
                 return console.log(err);
@@ -100,6 +102,15 @@ app.post('/api/domains/refresh', function(req,res) {
 
 app.get('/api/domains/_search', function(req, res) {
     domain = req.query.domain
+    if(domain == ''){
+        return false
+    }
+    for(var i = 0; i < domains.length; i++){
+        if(domains[i].domain == domain){
+            return false
+        }
+    }
+    
     domains.push({domain: domain})
     refresh_domain(domains.length - 1, function() {
         res.json(domains[domains.length - 1])
@@ -112,3 +123,7 @@ app.use(express.static('node_modules/bootstrap/dist/css/'));
 app.listen(3000, function () {
     console.log('NodeJS listening on port 3000!');
 });
+
+
+// starttls
+// printf "quit\n" | openssl s_client -connect 95.141.107.34:25 -starttls smtp 2>/dev/null  | openssl x509 -enddate -noout

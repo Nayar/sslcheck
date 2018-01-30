@@ -11,5 +11,5 @@ function check {
 for domain in "${domains[@]}"; do
         
         days_rem=$(check $domain)
-        echo "{domain: \"$domain\", days_rem: $days_rem}"
+        echo "{\"domain\": \"$domain\", \"days_rem\": $days_rem}"
 done
